@@ -1,3 +1,4 @@
+#!/bin/bash
 n_failed=0
 
 function test_file {
