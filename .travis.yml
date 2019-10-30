@@ -1,10 +1,11 @@
 language: C
-jobs:
-    - stage: test
-      os: linux
-      name: Xenial + Clang
-      dist: xenial
-      sudo: false
-      compiler: clang
-      script: make test
+script: make test
+#jobs:
+#    - stage: test
+#      os: linux
+#      name: Xenial + Clang
+#      dist: xenial
+#      sudo: false
+#      compiler: clang
+#      script: make test
 
