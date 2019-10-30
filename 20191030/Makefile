@@ -5,3 +5,6 @@ build/:
 
 build/%: build/ %.c
 	$(CC) $(CFLAGS) -o $@ $*.c
+
+test: test.sh build/palindrome data/*
+	@./test.sh
