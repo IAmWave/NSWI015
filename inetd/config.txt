@@ -1,0 +1,8 @@
+2222
+/bin/cat
+3331
+/bin/sed
+2223
+/usr/bin/rev
+2224
+/usr/local/bin/tac
