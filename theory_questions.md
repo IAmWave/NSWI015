@@ -50,13 +50,15 @@ These notes are for my use, correctness not guaranteed.
 ## File systems
 
 - What objects in UNIX are accessible via file system interface? What is the difference between character and block device?
-    * block device (e.g. disk) is buffered - r/w happens in blocks, character device (terminal) is not
+    * accessible via file system interface: files, sockets, named pipes, peripheral device, network drives
+    * character device (terminal) is not buffered
+    * block device (e.g. disk) is buffered, r/w happens in blocks. The blocks are then cached for faster IO
 - What are access rights for files? What is set UID?
     * each file has read/write/exec permissions (access rights) set for owner, group and others (u, g, o)
     * sticky bit: files may be deleted/renamed only by file owner, dir owner or root
     * set UID (SUID) see above
 - How do processes access open files? What is the difference between descriptor and opening of a file?
-
+    * multiple descriptors may correspond to a single open file (e.g. by `dup()`), also a descriptor may also correspond to a socket, pipe etc.
 - Describe structure of S5 volume and its extensions (ufs).
     * boot block, superblock, inode area, data block area
     * ufs: divided into cylinder groups
@@ -106,16 +108,18 @@ These notes are for my use, correctness not guaranteed.
     - How can one create global variable for a thread?
         * `pthread_key_create`, `pthread_setspecific`, `pthread_getspecific`
 - Describe the process for creating and destroying a thread? How do the destructors of keyed values and exit handlers work?
+    * creating: `pthread_create`, destroying: when the function ends
     * cleanup functions are called, data destructors called in unspecified order
 - List synchronization primitives for threads.
-    * mutexes: analogous to semaphors
-    * condition variables
-    * read-write locks
-    * barriers
+    * mutexes: analogous to semaphors, with a capacity of 1
+    * condition variables: used to signal the state of shared data (e.g. we are waiting for a queue to become non-empty)
+    * read-write locks: multiple threads may have read locks, only one write lock. But read and write locks are mutually exclusive
+    * barriers: waits for all threads to reach the barrier
     - Describe the way of using condition variables, reasons for using them in certain way (w.r.t. order of locking) and what could happen if this was not abided.
+        * order of locking: see 202?
 - What are the ways of solving synchronization arithmetic operation (adding and subtraction) between threads and list their advantages and disadvantages.
     * mutex
-    * atomic functions from `<stdatomic.h>` or `<atomic.h>` (not available everywhere)
+    * atomic functions from `<stdatomic.h>` or `<atomic.h>`, faster, but not available everywhere
 - What happens if one thread calls fork()? What problem this could lead to and how to solve it?
     * other threads are not copied, if they had allocated memory it is lost. their mutexes remain locked
 
@@ -145,13 +149,12 @@ These notes are for my use, correctness not guaranteed.
         * `inet_pton`, `inet_ntop`, `getprotobyname`, `getservbyname`
     - Why do the functions for converting from local and network byte order have to be used?
         * network: big-endian, computers mostly little-endian
-
 - Describe standard functions for conversion from hostname to address and back, their use for client and server. What advantages do they have compared to non-standard functins?
     * `getaddrinfo`, `getnameinfo`
 - Describe possibilities of sequential and parallel handling of clients of TCP server.
     * parallel: `fork()` after `accept()` (new child process per client), or after `listen()` (pool of workers)
-- How does inetd work? How does parallel handling of UDP clients look like?
-    * a single socket
+- How does `inetd` work? How does parallel handling of UDP clients look like?
+    * a single socket may be used to talk to multiple clients
 - What are the ways of expecting/handling data from multiple descriptors?
     * `select`, `poll`
     - How are the functions used when implementing network server which handles multiple clients from one process without the use of threads?
